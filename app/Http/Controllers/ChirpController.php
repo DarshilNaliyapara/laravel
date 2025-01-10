@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Response; 
 use App\Models\Chirp;
+use App\Models\Reply;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,16 +19,14 @@ class ChirpController extends Controller
        
         return view('chirps.index', [
             'chirps' => Chirp::with('user')->latest()->get(),
+            'replies' => Reply::with('chirps','user')->latest()->get(),
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
-    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -46,10 +45,7 @@ class ChirpController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Chirp $chirp)
-    {
-        //
-    }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -82,12 +78,14 @@ class ChirpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Chirp $chirp):RedirectResponse
+    public function destroy(Chirp $chirp,Reply $reply):RedirectResponse
     {
         Gate::authorize('delete', $chirp);
-
+       
         $chirp->delete();
- 
+        $reply->delete();
         return redirect(route('chirps.index'));
     }
+    
+    
 }

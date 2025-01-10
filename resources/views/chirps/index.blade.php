@@ -9,9 +9,10 @@
                 class="block w-full border-gray-300 bg-black text-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
             >{{ old('message') }}</textarea>
             <x-input-error for="message" class="mt-2" />
-            <x-primary-button class="mt-4">{{ __('Chirp') }}</x-primary-button>
+            <x-primary-button class="mt-4">{{ __('Comment') }}</x-primary-button>
         </form>
-        <div class="mt-6 bg-black  shadow-sm rounded-lg divide-y">
+
+        <div class="mt-6 bg-black shadow-sm rounded-lg divide-y">
             @foreach ($chirps as $chirp)
                 <div class="p-6 flex space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white -scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -52,6 +53,38 @@
                             @endif
                         </div>
                         <p class="mt-4 text-lg text-white">{{ $chirp->message }}</p>
+
+                        <form action="{{ route('chirps.reply', $chirp) }}" method="get">
+                            @csrf
+                            <x-primary-button class="mt-4">{{ __('Reply') }}</x-primary-button>
+                        </form>
+
+                        <div class="mt-6 space-y-4">
+                            @foreach ($replies as $reply)
+                            @if($chirp->id === $reply->chirp_id)
+                            @csrf
+                                <div class="p-4 bg-gray-800 rounded">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            
+                                            <span class="text-white font-bold">{{ $reply->user->name }} Replied to {{ $chirp->user->name }}</span>
+                                            <small class="ml-2 text-sm text-white">{{ $reply->created_at->format('j M Y, g:i a') }}</small>
+                                        </div>
+                                        @if ($reply->user->is(auth()->user()))
+                                        
+                                            @method('delete')
+                                        
+                           
+                            <form action="{{route('chirps.destroyreply', $reply)}}" method="get">
+                            <x-primary-button>{{ __('Delete') }}</x-primary-button>
+                            </form>
+                            @endif
+                                    </div>
+                                    <p class="mt-2 text-white">{{ $reply->replies }}</p>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             @endforeach

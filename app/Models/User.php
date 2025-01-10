@@ -51,6 +51,10 @@ public function chirps(): HasMany
 {
     return $this->hasMany(Chirp::class);
 }
+public function replies(): HasMany
+{
+    return $this->hasMany(Reply::class);
+}
    
 
 }
